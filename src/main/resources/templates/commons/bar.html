@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+</head>
+<body>
+<nav th:fragment="topbar">
+    <!-- 页面头部信息-->
+    <div id="head" class="header">
+        <!-- logo div框-->
+        <div class="logo">
+            <img th:src="@{/my/imgs/hj.jpg}" class="img-circle"/>
+        </div>
+        <!-- 中间字体显示框-->
+        <div class="homeText">
+            <h1>Home page</h1>
+        </div>
+        <!-- 右边登录人信息框-->
+        <div class="logName">
+            <h4 th:text="${session.username}"></h4>
+        </div>
+    </div>
+</nav>
+
+<!--menubar-->
+<nav th:fragment="menubar">
+    <!-- 页面菜单信息-->
+    <div id="menu" class="nav">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseOne">
+                            >用户管理
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <a href="#" class="list-group-item"
+                           th:class="${activeUri=='user/list.html'?'list-group-item active':'list-group-item'}"
+                           th:href=" @{/user/all/1/10}">
+                            用户列表
+                        </a>
+                        <a href="#" class="list-group-item">2</a>
+                        <a href="#" class="list-group-item"
+                           th:class="${activeUri=='user/add.html'?'list-group-item active':'list-group-item'}"
+                           th:href=" @{/user/addUserPage}">
+                            新增用户
+                        </a>
+                        <a href="#" class="list-group-item">4</a>
+                        <a href="#" class="list-group-item">5</a>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseTwo">
+                            第 2 部分
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                        cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                        vice lomo.
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseThree">
+                            第 3 部分
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                        cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                        vice lomo.
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion"
+                           href="#collapseFour">
+                            第 4 部分
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseFour" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Nihil anim keffiyeh helvetica, craft beer labore wes anderson
+                        cred nesciunt sapiente ea proident. Ad vegan excepteur butcher
+                        vice lomo.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<!--footbar-->
+<nav th:fragment="footbar">
+    <!-- 页面底部信息-->
+    <div id="foot" class="footer">Copyright ? W3Schools.com</div>
+</nav>
+</body>
+</html>

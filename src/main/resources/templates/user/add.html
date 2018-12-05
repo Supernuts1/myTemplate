@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>homepage</title>
+    <link rel="stylesheet" th:href="@{/dist/css/bootstrap.min.css}"/>
+    <script th:src="@{/my/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/my/js/confirm.js}"></script>
+    <link rel="stylesheet" th:href="@{/my/css/layout.css}"/>
+    <script th:src="@{/dist/js/bootstrap.min.js}"></script>
+    <script>
+        /*<![CDATA[*/
+        $(function () {
+            var validateUsername = false;//验证结果
+            var validatePassword1 = false;
+            var validatePassword2 = false;
+            //判断用户名是否存在
+            $("#username").blur(function () {
+                $.ajax({
+                    type: "post",
+                    url: "/user/userExis",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    dataType: "json",
+                    data: {
+                        "username": $.trim($("#username").val())
+                    },
+                    success: function (result) {
+                        result = $.trim(result);
+                        if (result == "" || result == null) {
+                            $("#usernamelabel").text("");
+                            validateUsername = true;
+                        } else {
+                            $("#usernamelabel").text(result);
+                            validateUsername = false;
+                        }
+                    },
+                    error: function (e) {
+
+                    }
+                });
+            });
+            $("#password1").blur(function () {
+                var pwd1 = $.trim($("#password1").val());
+                if (pwd1.length < 6 || pwd1.length > 12) {
+                    $("#password1label").text("密码长度应在6-12位之间！");
+                    validatePassword1 = false;
+                } else {
+                    $("#password1label").text("");
+                    validatePassword1 = true;
+                }
+            });
+            $("#password2").blur(function () {
+                var pwd1 = $.trim($("#password1").val());
+                var pwd2 = $.trim($("#password2").val());
+                if (pwd1 != pwd2) {
+                    $("#password2label").text("两次密码不一致！");
+                    validatePassword2 = false;
+                } else {
+                    $("#password2label").text("");
+                    validatePassword2 = true;
+                }
+            });
+            $("#addUser").click(function () {
+                if (validateUsername && validatePassword1 && validatePassword2) {
+                    var username = $.trim($("#username").val());
+                    var password = $.trim($("#password1").val());
+                    var gender = $("input[name='gender']:checked").val();
+                    $.ajax({
+                        type: "post",
+                        url: "/user/add",
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        dataType: "json",
+                        data: {
+                            "username": username,
+                            "password": password,
+                            "gender": gender
+                        },
+                        success: function (result) {
+                            validateUsername = false;
+                            validatePassword1 = false;
+                            validatePassword2 = false;
+                            $("#username").val("");
+                            $("#password1").val("");
+                            $("#password2").val("");
+                            $("input[name='gender']:eq(0)").prop("checked", true);
+                            Modal.alert(
+                                {
+                                    msg: result,
+                                    title: '添加结果',
+                                    btnok: '确定',
+                                    btncl: '取消'
+                                });
+                        },
+                        error: function (e) {
+                            alert(e);
+                        }
+                    });
+                }
+                return false;
+            });
+        });
+        /*]]>*/
+    </script>
+</head>
+<body>
+<!--引入topbar-->
+<div th:replace="commons/bar::topbar"></div>
+<!--引入menubar-->
+<div th:replace="commons/bar::menubar(activeUri='user/add.html')"></div>
+
+<!-- 页面主要显示信息-->
+<div id="body" class="section">
+    <form class="form-horizontal" role="form">
+        <table class="table table-hover" style="width: 50%;text-align: center">
+            <caption>用户管理->新增用户</caption>
+            <tbody>
+            <tr>
+                <td width="20%">
+                    <label for="username">用户名:</label>
+                </td>
+                <td width="50%">
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder="请输入用户名" style="width: 70%;"/>
+                </td>
+                <td width="30%"><label id="usernamelabel" style="color: red"></label></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="password1">密码:</label>
+                </td>
+                <td>
+                    <input type="password" class="form-control" id="password1" name="password1"
+                           placeholder="请输入密码" style="width: 70%;"/>
+                </td>
+                <td><label id="password1label" style="color: red"></label></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="password2">确认密码:</label>
+                </td>
+                <td>
+                    <input type="password" class="form-control" id="password2" name="password2"
+                           placeholder="请再次输入密码" style="width: 70%;"/>
+                </td>
+                <td><label id="password2label" style="color: red"></label></td>
+            </tr>
+            <tr>
+                <td>
+                    <label>性别:</label>
+                </td>
+                <td>
+                    <div class="radio-inline" style="float: left">
+                        <label>
+                            <input type="radio" name="gender" id="gender1" value="1" checked="checked"/> 男
+                        </label>
+                    </div>
+                    <div class="radio-inline" style="float: left">
+                        <label>
+                            <input type="radio" name="gender" id="gender2" value="2"/>女
+                        </label>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button type="button" class="btn btn-primary" id="addUser">添加</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<!-- 确认框 begin-->
+<div id="ycf-alert" class="modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                        class="sr-only">Close</span></button>
+                <h5 class="modal-title"><i class="fa fa-exclamation-circle"></i> [Title]</h5>
+            </div>
+            <div class="modal-body small">
+                <p>[Message]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary ok" data-dismiss="modal">[BtnOk]</button>
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">[BtnCancel]</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 确认框 end -->
+<!--引入footbar-->
+<div th:replace="commons/bar::footbar"></div>
+</body>
+</html>

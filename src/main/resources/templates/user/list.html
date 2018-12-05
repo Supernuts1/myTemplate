@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>homepage</title>
+    <link rel="stylesheet" th:href="@{/dist/css/bootstrap.min.css}"/>
+    <script th:src="@{/my/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/my/js/confirm.js}"></script>
+    <link rel="stylesheet" th:href="@{/my/css/layout.css}"/>
+    <script th:src="@{/dist/js/bootstrap.min.js}"></script>
+    <script th:src="@{/laydate/laydate.js}"></script>
+    <script>
+        $(function () {
+            //日期插件
+            laydate.render({
+                elem: '#beginDate' //指定元素
+            });
+            laydate.render({
+                elem: '#endDate' //指定元素
+            });
+            $(".deleteBtn").click(function () {
+                var delUri = $(this).attr("del_uri");
+                Modal.confirm(
+                    {
+                        msg: "是否删除用户：" + $(this).parent().parent().children().first().next().text() + "？"
+                    })
+                    .on(function (e) {
+                        if (e) {
+                            $("#deleteUserForm").attr("action", delUri).submit();
+                        }
+                    });
+                return false;
+            });
+//            //查询按钮
+//            $("#query").click(function () {
+//                var id = $("#qid").val();
+//                var username = $("#qusername").val();
+//                var gender = $("#qgender option:selected").val();
+//                var beginDate = $("#beginDate").val();
+//                var endDate = $("#endDate").val();
+//                $.ajax({
+//                    type: "post",
+//                    url: "/user/all/1/10",
+//                    headers: {
+//                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+//                    },
+//                    dataType: "json",
+//                    data: {
+//                        "id": id,
+//                        "username": username,
+//                        "gender": gender,
+//                        "beginDate": beginDate,
+//                        "endDate": endDate
+//                    },
+//                    success: function (result) {
+//                    },
+//                    error: function (e) {
+//                    }
+//                });
+//            });
+            //清空按钮
+            $("#clear").click(function () {
+                $("#qid").val("");
+                $("#qusername").val("");
+                $("#beginDate").val("");
+                $("#endDate").val("");
+                $("#qgender").find("option[value=0]").prop("selected", true);
+            });
+        });
+    </script>
+</head>
+<body>
+<!--引入topbar-->
+<div th:replace="commons/bar::topbar"></div>
+<!--引入menubar-->
+<div th:replace="commons/bar::menubar(activeUri='user/list.html')"></div>
+
+<!-- 页面主要显示信息-->
+<div id="body" class="section">
+    <table class="table table-hover">
+        <caption>用户管理->用户列表</caption>
+        <!-- 查询框 -->
+        <caption>
+            <form th:action="@{/user/all/1/10}" class="form-horizontal" role="form">
+                <table style="width:100%;">
+                    <tr>
+                        <td style="width:33%;">
+                            <div class="form-group">
+                                <label for="qid" class="col-sm-2 control-label">id：</label>
+                                <div class="col-sm-10" style="width:50%;">
+                                    <input type="text" class="form-control" id="qid" name="id"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width:33%;">
+                            <div class="form-group">
+                                <label for="qusername" class="col-sm-2 control-label">用户名：</label>
+                                <div class="col-sm-10" style="width:50%;">
+                                    <input type="text" class="form-control" id="qusername" name="username"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width:33%;">
+                            <label for="qgender" style="display:inline;">性别：</label>
+                            <select class="form-control" name="gender" id="qgender" style="width:20%;display: inline">
+                                <option value="0">全部</option>
+                                <option value="1">男</option>
+                                <option value="2">女</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:40%;">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">创建时间：</label>
+                                <div class="col-sm-10" style="width:50%;">
+                                    <input type="text" class="form-control" id="beginDate" name="beginDate"
+                                           style="width:40%;display: inline"/>-
+                                    <input type="text" class="form-control" id="endDate" name="endDate"
+                                           style="width:40%;display: inline"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width:33%;"></td>
+                        <td style="width:33%;"></td>
+                    </tr>
+                    <tr>
+                        <td style="width:33%;"></td>
+                        <td style="width:33%;">
+                            <div class="form-group">
+                                <div class="col-sm-10" style="width:50%;">
+                                    <button type="submit" id="query" class="btn btn-info"
+                                            style="width:40%;display: inline">查询
+                                    </button>
+                                    &nbsp; &nbsp; &nbsp;
+                                    <button type="button" id="clear" class="btn btn-info"
+                                            style="width:40%;display: inline">清空
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width:33%;"></td>
+                    </tr>
+                </table>
+            </form>
+        </caption>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>密码</th>
+            <th>性别</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user:${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.password}"></td>
+            <td th:text="${user.gender}==1?'男':'女'"></td>
+            <td th:text="${#dates.format(user.createtime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td>
+                <a class="btn btn-sm btn-primary" th:href="@{/user/toUpdatePage/}+${user.id}">编辑</a>
+                <button th:attr="del_uri=@{/user/delete/}+${pageNum}+'/'+${pageSize}+'/'+${user.id}"
+                        class="btn btn-sm btn-danger deleteBtn">删除
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="page">
+        <ul class="pagination">
+            <li><a href="">&laquo;</a></li>
+
+            <li>
+                <a th:if="${not isFirstPage}" th:href="@{${'/user/all/'+(pageNum-1)+'/'+(pageSize)}}">Previous</a>
+                <a th:if="${isFirstPagee}" href="javascript:void(0);">Previous</a>
+            </li>
+
+            <li th:each="pageNo : ${#numbers.sequence(1, totalPages)}" th:class="${pageNum eq pageNo}?active">
+                <a th:if="${pageNum eq pageNo}" href="javascript:void(0);">
+                    <span th:text="${pageNo}"></span>
+                </a>
+
+                <a th:if="${not (pageNum eq pageNo)}" th:href="@{${'/user/all/'+(pageNo)+'/'+(pageSize)}}">
+                    <span th:text="${pageNo}"></span>
+                </a>
+            </li>
+            <li>
+                <a th:if="${not isLastPage}" th:href="@{${'/user/all/'+(pageNum+1)+'/'+(pageSize)}}">Next</a>
+                <a th:if="${isLastPage}" href="javascript:void(0);">Next</a>
+            </li>
+
+            <li><a href="#">&raquo;</a></li>
+        </ul>
+    </div>
+    <form id="deleteUserForm" method="post">
+    </form>
+</div>
+<!-- 确认框 begin-->
+<div id="ycf-alert" class="modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                        class="sr-only">Close</span></button>
+                <h5 class="modal-title"><i class="fa fa-exclamation-circle"></i> [Title]</h5>
+            </div>
+            <div class="modal-body small">
+                <p>[Message]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary ok" data-dismiss="modal">[BtnOk]</button>
+                <button type="button" class="btn btn-default cancel" data-dismiss="modal">[BtnCancel]</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 确认框 end -->
+<!--引入footbar-->
+<div th:replace="commons/bar::footbar"></div>
+</body>
+</html>
