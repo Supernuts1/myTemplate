@@ -7,7 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -56,9 +59,9 @@ public class UserController {
         model.addAttribute("pageSize", pageInfo.getPageSize());
         //是否是第一页
         model.addAttribute("isFirstPage", pageInfo.isIsFirstPage());
-        if(pageInfo.getPages()==0){
+        if (pageInfo.getPages() == 0) {
             model.addAttribute("totalPages", 1);
-        }else{
+        } else {
             //获得总页数
             model.addAttribute("totalPages", pageInfo.getPages());
         }
@@ -90,7 +93,7 @@ public class UserController {
         //是否是最后一页
         model.addAttribute("isLastPage", pageInfo.isIsLastPage());
         model.addAttribute("users", pageInfo.getList());
-        return "home";
+        return "user/list";
     }
 
     /**
@@ -112,7 +115,7 @@ public class UserController {
 //        if (userService.login(user)) {
         if (true) {
             session.setAttribute("username", username);
-            PageInfo<User> pageInfo = userService.findAllUser(1, 10,"","","","","");
+            PageInfo<User> pageInfo = userService.findAllUser(1, 10, "", "", "", "", "");
             //获得当前页
             model.addAttribute("pageNum", pageInfo.getPageNum());
             //获得一页显示的条数
@@ -124,7 +127,7 @@ public class UserController {
             //是否是最后一页
             model.addAttribute("isLastPage", pageInfo.isIsLastPage());
             model.addAttribute("users", pageInfo.getList());
-            return "home";
+            return "user/list";
         } else {
             map.put("msg", "用户名密码错误");
             return "index";
@@ -201,11 +204,16 @@ public class UserController {
         return list;
     }
 
-    @RequestMapping(value ="/toUpdatePage/{userid}", produces = {"application/json;charset=UTF-8"})
-    public String toUpdatePage(@PathVariable("userid")Integer id,Model model){
-        User user=userService.getUserById(id);
-        model.addAttribute("user",user);
-        //回到修改页面
-        return "user/add";
+    /**
+     * 展示修改页面，反显用户数据
+     *
+     * @param id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/showUpdatePage/{userid}", produces = {"application/json;charset=UTF-8"})
+    public User showUpdatePage(@PathVariable("userid") Integer id) {
+        User user = userService.getUserById(id);
+        return user;
     }
 }

@@ -9,65 +9,10 @@
     <link rel="stylesheet" th:href="@{/my/css/layout.css}"/>
     <script th:src="@{/dist/js/bootstrap.min.js}"></script>
     <script th:src="@{/laydate/laydate.js}"></script>
-    <script>
-        $(function () {
-            //日期插件
-            laydate.render({
-                elem: '#beginDate' //指定元素
-            });
-            laydate.render({
-                elem: '#endDate' //指定元素
-            });
-            $(".deleteBtn").click(function () {
-                var delUri = $(this).attr("del_uri");
-                Modal.confirm(
-                    {
-                        msg: "是否删除用户：" + $(this).parent().parent().children().first().next().text() + "？"
-                    })
-                    .on(function (e) {
-                        if (e) {
-                            $("#deleteUserForm").attr("action", delUri).submit();
-                        }
-                    });
-                return false;
-            });
-//            //查询按钮
-//            $("#query").click(function () {
-//                var id = $("#qid").val();
-//                var username = $("#qusername").val();
-//                var gender = $("#qgender option:selected").val();
-//                var beginDate = $("#beginDate").val();
-//                var endDate = $("#endDate").val();
-//                $.ajax({
-//                    type: "post",
-//                    url: "/user/all/1/10",
-//                    headers: {
-//                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-//                    },
-//                    dataType: "json",
-//                    data: {
-//                        "id": id,
-//                        "username": username,
-//                        "gender": gender,
-//                        "beginDate": beginDate,
-//                        "endDate": endDate
-//                    },
-//                    success: function (result) {
-//                    },
-//                    error: function (e) {
-//                    }
-//                });
-//            });
-            //清空按钮
-            $("#clear").click(function () {
-                $("#qid").val("");
-                $("#qusername").val("");
-                $("#beginDate").val("");
-                $("#endDate").val("");
-                $("#qgender").find("option[value=0]").prop("selected", true);
-            });
-        });
-    </script>
+    <script th:src="@{/my/js/common/common.js}"></script>
+    <!-- 上面都是公用的JS -->
+    <!-- list.js 是这个页面的控制JS -->
+    <script th:src="@{/my/js/user/list.js}"></script>
 </head>
 <body>
 <!--引入topbar-->
@@ -162,7 +107,9 @@
             <td th:text="${user.gender}==1?'男':'女'"></td>
             <td th:text="${#dates.format(user.createtime, 'yyyy-MM-dd HH:mm:ss')}"></td>
             <td>
-                <a class="btn btn-sm btn-primary" th:href="@{/user/toUpdatePage/}+${user.id}">编辑</a>
+                <button th:attr="upd_uri=@{/user/showUpdatePage/}+${user.id}"
+                        class="btn btn-sm btn-primary updateBtn">编辑
+                </button>
                 <button th:attr="del_uri=@{/user/delete/}+${pageNum}+'/'+${pageSize}+'/'+${user.id}"
                         class="btn btn-sm btn-danger deleteBtn">删除
                 </button>
@@ -196,8 +143,89 @@
             <li><a href="#">&raquo;</a></li>
         </ul>
     </div>
+    <!-- 为了触发删除 -->
     <form id="deleteUserForm" method="post">
     </form>
+    <!-- 修改的弹出窗 -->
+    <div class="modal fade" id="updateUser" tabindex="-1" role="dialog" aria-labelledby="updateUserLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        修改用户
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <!-- 修改框 -->
+                    <form class="form-horizontal" role="form">
+                        <table class="table table-hover">
+                            <tbody>
+                            <tr>
+                                <td width="20%">
+                                    <label for="username">用户名:</label>
+                                </td>
+                                <td width="50%">
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           placeholder="请输入用户名" style="width: 70%;"/>
+                                </td>
+                                <td width="30%"><label id="usernamelabel" style="color: red"></label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="password1">密码:</label>
+                                </td>
+                                <td>
+                                    <input type="password" class="form-control" id="password1" name="password1"
+                                           placeholder="请输入密码" style="width: 70%;"/>
+                                </td>
+                                <td><label id="password1label" style="color: red"></label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="password2">确认密码:</label>
+                                </td>
+                                <td>
+                                    <input type="password" class="form-control" id="password2" name="password2"
+                                           placeholder="请再次输入密码" style="width: 70%;"/>
+                                </td>
+                                <td><label id="password2label" style="color: red"></label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>性别:</label>
+                                </td>
+                                <td>
+                                    <div class="radio-inline" style="float: left">
+                                        <label>
+                                            <input type="radio" name="gender" id="gender1" value="1" checked="checked"/> 男
+                                        </label>
+                                    </div>
+                                    <div class="radio-inline" style="float: left">
+                                        <label>
+                                            <input type="radio" name="gender" id="gender2" value="2"/>女
+                                        </label>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="updateUserID" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="updateSubmit">
+                        提交更改
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
 </div>
 <!-- 确认框 begin-->
 <div id="ycf-alert" class="modal">
