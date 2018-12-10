@@ -23,4 +23,6 @@ public interface UserService {
     boolean selectUserExit(String username);
 
     User getUserById(Integer id);
+
+    int updateUser(User user);
 }

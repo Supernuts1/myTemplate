@@ -35,6 +35,8 @@ $(function () {
             $("#password2").val(data.password);
             $("input[name='gender'][value='"+data.gender+"']").attr("checked",true);
             $("#updateUser").modal('show');
+            $("#username").focus();//这样是为了触发提交的验证
+            $("#username").blur();
         });
         return false;
     });
@@ -45,8 +47,5 @@ $(function () {
         $("#beginDate").val("");
         $("#endDate").val("");
         $("#qgender").find("option[value=0]").prop("selected", true);
-    });
-    $("#updateSubmit").click(function () {
-        
     });
 });

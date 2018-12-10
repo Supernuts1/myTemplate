@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 登陆方法
+     *
      * @param user
      * @return
      */
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 按照ID删除用户
+     *
      * @param id
      * @return
      */
@@ -57,6 +59,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 查询用户是否存在
+     *
      * @param username
      * @return
      */
@@ -72,12 +75,23 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 按照ID去查找单个用户
+     *
      * @param id
      * @return
      */
     @Override
     public User getUserById(Integer id) {
         return userMapper.selectUserById(id);
+    }
+
+    /**
+     * 更新单个用户信息
+     * @param user
+     * @return
+     */
+    @Override
+    public int updateUser(User user) {
+        return userMapper.updateUser(user);
     }
 
     /**

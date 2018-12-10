@@ -216,4 +216,32 @@ public class UserController {
         User user = userService.getUserById(id);
         return user;
     }
+
+    /**
+     * 更新用户
+     *
+     * @param username
+     * @param password
+     * @param gender
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/update", produces = {"application/json;charset=UTF-8"})
+    public List<String> updateUser(@RequestParam("id") String id, @RequestParam("username") String username, @RequestParam("password") String password,
+                                   @RequestParam("gender") String gender) {
+        User user = new User();
+        user.setId(Long.parseLong(id));
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setGender(Integer.parseInt(gender));
+        user.setCreatetime(new Date());
+        int back = userService.updateUser(user);
+        String msg = "";
+        if (back > 0) {
+            msg = "修改用户成功！";
+        }
+        List<String> list = new ArrayList<String>();
+        list.add(msg);
+        return list;
+    }
 }

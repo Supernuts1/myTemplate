@@ -100,4 +100,13 @@
         from user
         where id = #{id,jdbcType=INTEGER}
     </select>
+    <update id="updateUser" parameterType="com.template.model.User">
+        update user
+        set
+        username=#{username,jdbcType=VARCHAR},
+        password=#{password,jdbcType=VARCHAR},
+        gender= #{gender,jdbcType=INTEGER}
+        where
+        id= #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

@@ -18,4 +18,6 @@ public interface UserMapper {
     String selectUserExit(String username);
 
     User selectUserById(long id);
+
+    int updateUser(User user);
 }
